@@ -1,0 +1,44 @@
+
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstdlib>
+using namespace std;
+
+int main()
+{
+    pid_t pid;
+
+    cout << "Parent Process Started" << endl;
+    cout << "Parent PID: " << getpid() << endl;
+
+    pid = fork();
+
+    if(pid < 0)
+    {
+        cout << "Fork failed!" << endl;
+        return 1;
+    }
+    else if(pid == 0)
+    {
+        // Child Process
+        cout << "\nChild Process Started" << endl;
+        cout << "Child PID: " << getpid() << endl;
+
+        cout << "\nReplacing child process using exec()..." << endl;
+
+        execlp("ls", "ls", "-l", NULL);
+
+        // This executes only if exec() fails
+        perror("exec failed");
+        exit(1);
+    }
+    else
+    {
+        // Parent Process
+        wait(NULL);
+        cout << "\nParent Process: Child execution completed." << endl;
+    }
+
+    return 0;
+}
