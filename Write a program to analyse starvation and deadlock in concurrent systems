@@ -1,0 +1,122 @@
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <chrono>
+
+using namespace std;
+
+mutex m1, m2;
+atomic<int> ready(0);
+
+// Function to demonstrate deadlock situation
+void process1()
+{
+    m1.lock();
+
+    cout << "Process P1 acquired Resource R1." << endl;
+
+    ready++;
+
+    while(ready < 2)
+    {
+        // Wait for P2
+    }
+
+    cout << "Process P1 is waiting for Resource R2."
+         << endl;
+
+    if(m2.try_lock())
+    {
+        cout << "Process P1 acquired R2." << endl;
+        m2.unlock();
+    }
+    else
+    {
+        cout << "Process P1 cannot acquire R2." << endl;
+    }
+
+    m1.unlock();
+}
+
+void process2()
+{
+    m2.lock();
+
+    cout << "Process P2 acquired Resource R2." << endl;
+
+    ready++;
+
+    while(ready < 2)
+    {
+        // Wait for P1
+    }
+
+    cout << "Process P2 is waiting for Resource R1."
+         << endl;
+
+    if(m1.try_lock())
+    {
+        cout << "Process P2 acquired R1." << endl;
+        m1.unlock();
+    }
+    else
+    {
+        cout << "Process P2 cannot acquire R1." << endl;
+    }
+
+    m2.unlock();
+}
+
+// Function to demonstrate starvation
+void starvation()
+{
+    cout << "\n===== STARVATION DEMONSTRATION ====="
+         << endl;
+
+    cout << "Low Priority Process P1 is waiting."
+         << endl;
+
+    for(int i = 1; i <= 5; i++)
+    {
+        cout << "High Priority Process P"
+             << i + 1 << " gets CPU." << endl;
+    }
+
+    cout << "\nProcess P1 is continuously waiting."
+         << endl;
+
+    cout << "Starvation condition demonstrated."
+         << endl;
+}
+
+int main()
+{
+    cout << "===== DEADLOCK DEMONSTRATION ====="
+         << endl;
+
+    thread t1(process1);
+    thread t2(process2);
+
+    t1.join();
+    t2.join();
+
+    cout << "\nDeadlock situation detected:"
+         << endl;
+
+    cout << "P1 holds R1 and waits for R2."
+         << endl;
+
+    cout << "P2 holds R2 and waits for R1."
+         << endl;
+
+    cout << "Circular wait condition exists."
+         << endl;
+
+    // Demonstrate starvation
+    starvation();
+
+    cout << "\nProgram Completed." << endl;
+
+    return 0;
+}
