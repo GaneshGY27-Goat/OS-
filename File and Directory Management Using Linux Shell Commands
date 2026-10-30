@@ -1,0 +1,38 @@
+#!/bin/bash
+
+echo "File and Directory Management"
+
+echo "Current Working Directory:"
+pwd
+
+echo "List of Files and Directories:"
+ls -l
+
+echo "Creating Directory:"
+mkdir Student
+echo "Directory created successfully."
+
+echo "Creating File:"
+touch Student.txt
+echo "File created successfully."
+
+echo "Copying File:"
+cp Student.txt Student_Copy.txt
+echo "File copied successfully."
+
+echo "Renaming File:"
+mv Student_Copy.txt New_Student.txt
+echo "File renamed successfully."
+
+echo "Searching File:"
+find . -name "Student.txt"
+
+echo "Deleting File:"
+rm New_Student.txt
+echo "File deleted successfully."
+
+echo "Removing Directory:"
+rmdir Student
+echo "Directory removed successfully."
+
+echo "Program Executed Successfully."
