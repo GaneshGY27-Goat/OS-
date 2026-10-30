@@ -1,0 +1,121 @@
+#include <iostream>
+#include <pthread.h>
+#include <unistd.h>
+
+using namespace std;
+
+#define N 5
+
+pthread_mutex_t forkMutex[N];
+pthread_barrier_t barrier;
+
+int deadlockCount = 0;
+pthread_mutex_t countMutex;
+
+void* philosopher(void* arg)
+{
+    int id = *(int*)arg;
+
+    int left = id;
+    int right = (id + 1) % N;
+
+    cout << "Philosopher " << id
+         << " is thinking." << endl;
+
+    // Pick up left fork
+    pthread_mutex_lock(&forkMutex[left]);
+
+    cout << "Philosopher " << id
+         << " picked up left fork " << left << endl;
+
+    // Wait until all philosophers hold left forks
+    pthread_barrier_wait(&barrier);
+
+    // Try to pick up right fork
+    cout << "Philosopher " << id
+         << " is waiting for right fork "
+         << right << endl;
+
+    if(pthread_mutex_trylock(&forkMutex[right]) != 0)
+    {
+        cout << "Philosopher " << id
+             << " cannot get right fork." << endl;
+
+        pthread_mutex_lock(&countMutex);
+        deadlockCount++;
+        pthread_mutex_unlock(&countMutex);
+    }
+    else
+    {
+        cout << "Philosopher " << id
+             << " is eating." << endl;
+
+        pthread_mutex_unlock(&forkMutex[right]);
+    }
+
+    // Release left fork
+    pthread_mutex_unlock(&forkMutex[left]);
+
+    return NULL;
+}
+
+int main()
+{
+    pthread_t philosophers[N];
+    int id[N];
+
+    // Initialize fork mutexes
+    for(int i = 0; i < N; i++)
+    {
+        pthread_mutex_init(&forkMutex[i], NULL);
+    }
+
+    pthread_mutex_init(&countMutex, NULL);
+
+    pthread_barrier_init(&barrier, NULL, N);
+
+    cout << "Dining Philosophers Problem" << endl;
+    cout << "Number of Philosophers: " << N << endl;
+    cout << "Number of Forks: " << N << endl << endl;
+
+    // Create philosopher threads
+    for(int i = 0; i < N; i++)
+    {
+        id[i] = i;
+        pthread_create(&philosophers[i], NULL,
+                       philosopher, &id[i]);
+    }
+
+    // Wait for all philosopher threads
+    for(int i = 0; i < N; i++)
+    {
+        pthread_join(philosophers[i], NULL);
+    }
+
+    cout << "\nDeadlock Analysis:" << endl;
+
+    if(deadlockCount == N)
+    {
+        cout << "Deadlock condition detected!" << endl;
+        cout << "All philosophers are waiting for "
+             << "their right forks." << endl;
+    }
+    else
+    {
+        cout << "Complete circular deadlock "
+             << "was not detected." << endl;
+    }
+
+    // Destroy synchronization objects
+    for(int i = 0; i < N; i++)
+    {
+        pthread_mutex_destroy(&forkMutex[i]);
+    }
+
+    pthread_mutex_destroy(&countMutex);
+    pthread_barrier_destroy(&barrier);
+
+    cout << "\nProgram Completed." << endl;
+
+    return 0;
+}
