@@ -1,0 +1,32 @@
+
+#!/bin/bash
+
+echo "===== TEXT PROCESSING USING LINUX FILTERS ====="
+
+echo -e "Apple\nMango\nBanana\nApple\nOrange\nMango" > fruits.txt
+
+echo -e "\n1. Display File Contents:"
+cat fruits.txt
+
+echo -e "\n2. Search for Apple:"
+grep "Apple" fruits.txt
+
+echo -e "\n3. Sort File Contents:"
+sort fruits.txt
+
+echo -e "\n4. Count Lines, Words and Characters:"
+wc fruits.txt
+
+echo -e "\n5. Display First 3 Lines:"
+head -n 3 fruits.txt
+
+echo -e "\n6. Display Last 3 Lines:"
+tail -n 3 fruits.txt
+
+echo -e "\n7. Convert Lowercase to Uppercase:"
+cat fruits.txt | tr 'a-z' 'A-Z'
+
+echo -e "\n8. Display Unique Sorted Lines:"
+sort fruits.txt | uniq
+
+echo -e "\n===== PROGRAM COMPLETED ====="
