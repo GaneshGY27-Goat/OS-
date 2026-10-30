@@ -1,0 +1,98 @@
+#include <iostream>
+#include <pthread.h>
+#include <semaphore.h>
+
+using namespace std;
+
+#define SIZE 5
+#define ITEMS 10
+
+int buffer[SIZE];
+
+int in = 0;
+int out = 0;
+
+sem_t empty;
+sem_t full;
+
+pthread_mutex_t mutex;
+
+void* producer(void* arg)
+{
+    for(int i = 1; i <= ITEMS; i++)
+    {
+        sem_wait(&empty);
+
+        pthread_mutex_lock(&mutex);
+
+        buffer[in] = i;
+
+        cout << "Producer produced: "
+             << buffer[in] << endl;
+
+        in = (in + 1) % SIZE;
+
+        pthread_mutex_unlock(&mutex);
+
+        sem_post(&full);
+    }
+
+    return NULL;
+}
+
+void* consumer(void* arg)
+{
+    for(int i = 1; i <= ITEMS; i++)
+    {
+        sem_wait(&full);
+
+        pthread_mutex_lock(&mutex);
+
+        int item = buffer[out];
+
+        cout << "Consumer consumed: "
+             << item << endl;
+
+        out = (out + 1) % SIZE;
+
+        pthread_mutex_unlock(&mutex);
+
+        sem_post(&empty);
+    }
+
+    return NULL;
+}
+
+int main()
+{
+    pthread_t producerThread;
+    pthread_t consumerThread;
+
+    sem_init(&empty, 0, SIZE);
+    sem_init(&full, 0, 0);
+
+    pthread_mutex_init(&mutex, NULL);
+
+    cout << "Producer-Consumer Problem"
+         << endl << endl;
+
+    pthread_create(&producerThread, NULL,
+                   producer, NULL);
+
+    pthread_create(&consumerThread, NULL,
+                   consumer, NULL);
+
+    pthread_join(producerThread, NULL);
+    pthread_join(consumerThread, NULL);
+
+    sem_destroy(&empty);
+    sem_destroy(&full);
+
+    pthread_mutex_destroy(&mutex);
+
+    cout << endl;
+    cout << "Producer-Consumer Problem Completed."
+         << endl;
+
+    return 0;
+}
