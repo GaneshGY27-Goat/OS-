@@ -1,0 +1,97 @@
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n;
+    int at[20], bt[20], ct[20], wt[20], tat[20];
+    float avgWT = 0, avgTAT = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    if(n < 1 || n > 20)
+    {
+        cout << "Invalid number of processes!";
+        return 0;
+    }
+
+    cout << "\nEnter Arrival Time and Burst Time:\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << "P" << i + 1 << " Arrival Time: ";
+        cin >> at[i];
+
+        cout << "P" << i + 1 << " Burst Time: ";
+        cin >> bt[i];
+
+        if(at[i] < 0 || bt[i] <= 0)
+        {
+            cout << "Invalid input!";
+            return 0;
+        }
+    }
+
+    // Sort processes according to Arrival Time
+    for(int i = 0; i < n - 1; i++)
+    {
+        for(int j = i + 1; j < n; j++)
+        {
+            if(at[i] > at[j])
+            {
+                int temp;
+
+                temp = at[i];
+                at[i] = at[j];
+                at[j] = temp;
+
+                temp = bt[i];
+                bt[i] = bt[j];
+                bt[j] = temp;
+            }
+        }
+    }
+
+    // Calculate Completion Time
+    for(int i = 0; i < n; i++)
+    {
+        if(i == 0)
+            ct[i] = at[i] + bt[i];
+        else
+        {
+            if(ct[i - 1] < at[i])
+                ct[i] = at[i] + bt[i];
+            else
+                ct[i] = ct[i - 1] + bt[i];
+        }
+
+        tat[i] = ct[i] - at[i];
+        wt[i] = tat[i] - bt[i];
+
+        avgWT += wt[i];
+        avgTAT += tat[i];
+    }
+
+    // Display Results
+    cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << "P" << i + 1 << "\t"
+             << at[i] << "\t"
+             << bt[i] << "\t"
+             << ct[i] << "\t"
+             << tat[i] << "\t"
+             << wt[i] << endl;
+    }
+
+    avgWT = avgWT / n;
+    avgTAT = avgTAT / n;
+
+    cout << "\nAverage Waiting Time: " << avgWT;
+    cout << "\nAverage Turnaround Time: " << avgTAT << endl;
+
+    return 0;
+}
