@@ -1,0 +1,36 @@
+
+#!/bin/bash
+
+echo "===== FILE PERMISSION MANAGEMENT ====="
+
+# Create a file
+echo "Creating a file..."
+touch sample.sh
+
+# Write content into file
+echo '#!/bin/bash' > sample.sh
+echo 'echo "Hello Linux"' >> sample.sh
+
+echo -e "\n1. Original File Permissions:"
+ls -l sample.sh
+
+# Give execute permission
+echo -e "\n2. Adding Execute Permission:"
+chmod +x sample.sh
+ls -l sample.sh
+
+# Change permissions to 754
+echo -e "\n3. Changing Permissions to 754:"
+chmod 754 sample.sh
+ls -l sample.sh
+
+# Execute the file
+echo -e "\n4. Executing the File:"
+./sample.sh
+
+# Remove write permission for others
+echo -e "\n5. Removing Write Permission:"
+chmod o-w sample.sh
+ls -l sample.sh
+
+echo -e "\n===== PROGRAM COMPLETED ====="
