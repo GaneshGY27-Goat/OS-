@@ -1,0 +1,132 @@
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n, m;
+    int alloc[10][10], request[10][10];
+    int avail[10], work[10];
+    int finish[10] = {0};
+    int deadlock[10], count = 0;
+    int i, j, found;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter number of resources: ";
+    cin >> m;
+
+    if(n < 1 || n > 10 || m < 1 || m > 10)
+    {
+        cout << "Invalid input!";
+        return 0;
+    }
+
+    cout << "\nEnter Allocation Matrix:\n";
+    for(i = 0; i < n; i++)
+    {
+        for(j = 0; j < m; j++)
+        {
+            cin >> alloc[i][j];
+        }
+    }
+
+    cout << "\nEnter Request Matrix:\n";
+    for(i = 0; i < n; i++)
+    {
+        for(j = 0; j < m; j++)
+        {
+            cin >> request[i][j];
+        }
+    }
+
+    cout << "\nEnter Available Resources:\n";
+    for(j = 0; j < m; j++)
+    {
+        cin >> avail[j];
+        work[j] = avail[j];
+    }
+
+    // Initialize Finish Array
+    for(i = 0; i < n; i++)
+    {
+        int allocated = 0;
+
+        for(j = 0; j < m; j++)
+        {
+            if(alloc[i][j] > 0)
+                allocated = 1;
+        }
+
+        finish[i] = (allocated == 0);
+    }
+
+    // Deadlock Detection Algorithm
+    while(1)
+    {
+        found = 0;
+
+        for(i = 0; i < n; i++)
+        {
+            if(finish[i] == 0)
+            {
+                int possible = 1;
+
+                for(j = 0; j < m; j++)
+                {
+                    if(request[i][j] > work[j])
+                    {
+                        possible = 0;
+                        break;
+                    }
+                }
+
+                if(possible)
+                {
+                    for(j = 0; j < m; j++)
+                    {
+                        work[j] += alloc[i][j];
+                    }
+
+                    finish[i] = 1;
+                    found = 1;
+                }
+            }
+        }
+
+        if(found == 0)
+            break;
+    }
+
+    // Display Result
+    for(i = 0; i < n; i++)
+    {
+        if(finish[i] == 0)
+        {
+            deadlock[count++] = i;
+        }
+    }
+
+    cout << "\n----- DEADLOCK ANALYSIS -----\n";
+
+    if(count == 0)
+    {
+        cout << "No Deadlock Detected.\n";
+        cout << "System is in a safe state.\n";
+    }
+    else
+    {
+        cout << "Deadlock Detected!\n";
+        cout << "Deadlocked Processes: ";
+
+        for(i = 0; i < count; i++)
+        {
+            cout << "P" << deadlock[i] << " ";
+        }
+
+        cout << "\nSystem is in an unsafe state.\n";
+    }
+
+    return 0;
+}
