@@ -1,0 +1,67 @@
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <cstring>
+
+using namespace std;
+
+int main()
+{
+    int fd[2];
+    pid_t pid;
+
+    char message[] = "Hello from Parent Process!";
+    char buffer[100];
+
+    // Create pipe
+    if(pipe(fd) == -1)
+    {
+        cout << "Pipe creation failed!" << endl;
+        return 1;
+    }
+
+    // Create child process
+    pid = fork();
+
+    if(pid < 0)
+    {
+        cout << "Fork failed!" << endl;
+        return 1;
+    }
+
+    else if(pid == 0)
+    {
+        // Child process
+
+        close(fd[1]);
+
+        cout << "Child Process Started" << endl;
+
+        read(fd[0], buffer, sizeof(buffer));
+
+        cout << "Message received by Child: "
+             << buffer << endl;
+
+        close(fd[0]);
+    }
+
+    else
+    {
+        // Parent process
+
+        close(fd[0]);
+
+        cout << "Parent Process Started" << endl;
+
+        write(fd[1], message, strlen(message) + 1);
+
+        cout << "Message sent by Parent: "
+             << message << endl;
+
+        close(fd[1]);
+
+        wait(NULL);
+    }
+
+    return 0;
+}
