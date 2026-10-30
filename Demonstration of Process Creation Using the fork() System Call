@@ -1,0 +1,57 @@
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+
+using namespace std;
+
+int main()
+{
+    pid_t pid;
+
+    cout << "Parent Process Started" << endl;
+
+    cout << "Parent Process ID: "
+         << getpid() << endl;
+
+    // Create child process
+    pid = fork();
+
+    if(pid < 0)
+    {
+        cout << "Process Creation Failed!" << endl;
+        return 1;
+    }
+
+    else if(pid == 0)
+    {
+        // Child Process
+        cout << "\nChild Process Created Successfully"
+             << endl;
+
+        cout << "Child Process ID: "
+             << getpid() << endl;
+
+        cout << "Parent Process ID: "
+             << getppid() << endl;
+    }
+
+    else
+    {
+        // Parent Process
+        cout << "\nParent Process Created Child Successfully"
+             << endl;
+
+        cout << "Child Process ID: "
+             << pid << endl;
+
+        wait(NULL);
+
+        cout << "Parent Process: Child Execution Completed."
+             << endl;
+    }
+
+    cout << "\nProcess Execution Completed."
+         << endl;
+
+    return 0;
+}
