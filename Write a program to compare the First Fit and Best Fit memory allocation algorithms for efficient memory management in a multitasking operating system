@@ -1,0 +1,129 @@
+
+#include <iostream>
+using namespace std;
+
+void firstFit(int block[], int process[], int m, int n)
+{
+    int temp[20];
+    int allocation[20];
+
+    for(int i = 0; i < m; i++)
+        temp[i] = block[i];
+
+    for(int i = 0; i < n; i++)
+        allocation[i] = -1;
+
+    cout << "\n--- First Fit Allocation ---\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            if(temp[j] >= process[i])
+            {
+                allocation[i] = j;
+                temp[j] -= process[i];
+                break;
+            }
+        }
+    }
+
+    cout << "Process\tSize\tBlock\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << "P" << i + 1 << "\t"
+             << process[i] << "\t";
+
+        if(allocation[i] != -1)
+            cout << "B" << allocation[i] + 1;
+        else
+            cout << "Not Allocated";
+
+        cout << endl;
+    }
+}
+
+void bestFit(int block[], int process[], int m, int n)
+{
+    int temp[20];
+    int allocation[20];
+
+    for(int i = 0; i < m; i++)
+        temp[i] = block[i];
+
+    for(int i = 0; i < n; i++)
+        allocation[i] = -1;
+
+    cout << "\n--- Best Fit Allocation ---\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        int best = -1;
+
+        for(int j = 0; j < m; j++)
+        {
+            if(temp[j] >= process[i])
+            {
+                if(best == -1 || temp[j] < temp[best])
+                    best = j;
+            }
+        }
+
+        if(best != -1)
+        {
+            allocation[i] = best;
+            temp[best] -= process[i];
+        }
+    }
+
+    cout << "Process\tSize\tBlock\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << "P" << i + 1 << "\t"
+             << process[i] << "\t";
+
+        if(allocation[i] != -1)
+            cout << "B" << allocation[i] + 1;
+        else
+            cout << "Not Allocated";
+
+        cout << endl;
+    }
+}
+
+int main()
+{
+    int m, n;
+    int block[20], process[20];
+
+    cout << "Enter number of memory blocks: ";
+    cin >> m;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    if(m < 1 || m > 20 || n < 1 || n > 20)
+    {
+        cout << "Invalid input!";
+        return 0;
+    }
+
+    cout << "\nEnter memory block sizes:\n";
+    for(int i = 0; i < m; i++)
+    {
+        cin >> block[i];
+    }
+
+    cout << "\nEnter process sizes:\n";
+    for(int i = 0; i < n; i++)
+    {
+        cin >> process[i];
+    }
+
+    firstFit(block, process, m, n);
+    bestFit(block, process, m, n);
+
+    return 0;
+}
