@@ -1,0 +1,123 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int main()
+{
+    int n, q;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    int bt[20];
+
+    // Input Burst Time
+    for(int i = 0; i < n; i++)
+    {
+        cout << "Enter Burst Time of P" << i + 1 << ": ";
+        cin >> bt[i];
+    }
+
+    cout << "\nEnter number of time quantum values: ";
+    cin >> q;
+
+    int quantum[20];
+
+    // Input different time quantum values
+    for(int i = 0; i < q; i++)
+    {
+        cout << "Enter Time Quantum " << i + 1 << ": ";
+        cin >> quantum[i];
+
+        if(quantum[i] <= 0)
+        {
+            cout << "Time Quantum must be positive.";
+            return 1;
+        }
+    }
+
+    cout << "\n===== ROUND ROBIN PERFORMANCE ANALYSIS =====\n";
+
+    for(int k = 0; k < q; k++)
+    {
+        int rt[20], ct[20], wt[20], tat[20];
+
+        queue<int> readyQueue;
+
+        int time = 0;
+        int completed = 0;
+        int allocations = 0;
+
+        float totalWT = 0;
+        float totalTAT = 0;
+
+        // Initialize remaining burst times
+        for(int i = 0; i < n; i++)
+        {
+            rt[i] = bt[i];
+            readyQueue.push(i);
+        }
+
+        // Round Robin Scheduling
+        while(!readyQueue.empty())
+        {
+            int i = readyQueue.front();
+            readyQueue.pop();
+
+            allocations++;
+
+            if(rt[i] > quantum[k])
+            {
+                time = time + quantum[k];
+                rt[i] = rt[i] - quantum[k];
+
+                readyQueue.push(i);
+            }
+            else
+            {
+                time = time + rt[i];
+                rt[i] = 0;
+
+                ct[i] = time;
+                completed++;
+            }
+        }
+
+        // Calculate Waiting and Turnaround Time
+        for(int i = 0; i < n; i++)
+        {
+            tat[i] = ct[i];
+            wt[i] = tat[i] - bt[i];
+
+            totalWT += wt[i];
+            totalTAT += tat[i];
+        }
+
+        // Display results
+        cout << "\nTime Quantum = " << quantum[k] << endl;
+
+        cout << "\nProcess\tBT\tCT\tTAT\tWT\n";
+
+        for(int i = 0; i < n; i++)
+        {
+            cout << "P" << i + 1 << "\t"
+                 << bt[i] << "\t"
+                 << ct[i] << "\t"
+                 << tat[i] << "\t"
+                 << wt[i] << endl;
+        }
+
+        cout << "\nAverage Waiting Time: "
+             << totalWT / n << endl;
+
+        cout << "Average Turnaround Time: "
+             << totalTAT / n << endl;
+
+        cout << "Total CPU Allocations: "
+             << allocations << endl;
+
+        cout << "-----------------------------------" << endl;
+    }
+
+    return 0;
+}
