@@ -1,0 +1,66 @@
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int start, n;
+    int blocks[50];
+
+    // Contiguous Allocation
+    cout << "--- Contiguous Allocation ---" << endl;
+
+    cout << "Enter starting block: ";
+    cin >> start;
+
+    cout << "Enter number of blocks: ";
+    cin >> n;
+
+    if(n <= 0 || n > 50 || start < 0)
+    {
+        cout << "Invalid input!";
+        return 0;
+    }
+
+    cout << "Allocated Blocks: ";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << start + i << " ";
+    }
+
+    // Linked Allocation
+    cout << "\n\n--- Linked Allocation ---" << endl;
+
+    cout << "Enter number of blocks: ";
+    cin >> n;
+
+    if(n <= 0 || n > 50)
+    {
+        cout << "Invalid number of blocks!";
+        return 0;
+    }
+
+    cout << "Enter block numbers:" << endl;
+
+    for(int i = 0; i < n; i++)
+    {
+        cin >> blocks[i];
+    }
+
+    cout << "File Block Chain: ";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << blocks[i];
+
+        if(i != n - 1)
+            cout << " -> ";
+        else
+            cout << " -> NULL";
+    }
+
+    cout << endl;
+
+    return 0;
+}
