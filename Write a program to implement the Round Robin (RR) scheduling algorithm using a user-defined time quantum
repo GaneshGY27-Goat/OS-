@@ -1,0 +1,105 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n, tq;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    int bt[20], at[20], rt[20];
+    int ct[20], tat[20], wt[20];
+
+    // Input Arrival Time and Burst Time
+    for(int i = 0; i < n; i++)
+    {
+        cout << "\nEnter Arrival Time of P"
+             << i + 1 << ": ";
+        cin >> at[i];
+
+        cout << "Enter Burst Time of P"
+             << i + 1 << ": ";
+        cin >> bt[i];
+
+        rt[i] = bt[i];
+    }
+
+    cout << "\nEnter Time Quantum: ";
+    cin >> tq;
+
+    if(tq <= 0)
+    {
+        cout << "Time Quantum must be positive.";
+        return 1;
+    }
+
+    int time = 0;
+    int completed = 0;
+
+    // Round Robin Scheduling
+    while(completed < n)
+    {
+        bool executed = false;
+
+        for(int i = 0; i < n; i++)
+        {
+            if(rt[i] > 0 && at[i] <= time)
+            {
+                executed = true;
+
+                if(rt[i] > tq)
+                {
+                    time = time + tq;
+                    rt[i] = rt[i] - tq;
+                }
+                else
+                {
+                    time = time + rt[i];
+                    rt[i] = 0;
+
+                    ct[i] = time;
+                    completed++;
+                }
+            }
+        }
+
+        if(executed == false)
+        {
+            time++;
+        }
+    }
+
+    // Calculate Turnaround Time and Waiting Time
+    float totalWT = 0, totalTAT = 0;
+
+    for(int i = 0; i < n; i++)
+    {
+        tat[i] = ct[i] - at[i];
+        wt[i] = tat[i] - bt[i];
+
+        totalWT += wt[i];
+        totalTAT += tat[i];
+    }
+
+    // Display Results
+    cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        cout << "P" << i + 1 << "\t"
+             << at[i] << "\t"
+             << bt[i] << "\t"
+             << ct[i] << "\t"
+             << tat[i] << "\t"
+             << wt[i] << endl;
+    }
+
+    cout << "\nAverage Waiting Time: "
+         << totalWT / n << endl;
+
+    cout << "Average Turnaround Time: "
+         << totalTAT / n << endl;
+
+    return 0;
+}
