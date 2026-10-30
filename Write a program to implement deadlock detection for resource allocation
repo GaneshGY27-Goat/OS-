@@ -1,0 +1,130 @@
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int n, m;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    cout << "Enter number of resource types: ";
+    cin >> m;
+
+    int allocation[10][10];
+    int request[10][10];
+    int available[10];
+    int work[10];
+    bool finish[10];
+
+    // Input Allocation Matrix
+    cout << "\nEnter Allocation Matrix:\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            cin >> allocation[i][j];
+        }
+    }
+
+    // Input Request Matrix
+    cout << "\nEnter Request Matrix:\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            cin >> request[i][j];
+        }
+    }
+
+    // Input Available Resources
+    cout << "\nEnter Available Resources:\n";
+
+    for(int j = 0; j < m; j++)
+    {
+        cin >> available[j];
+        work[j] = available[j];
+    }
+
+    // Initialize Finish Array
+    for(int i = 0; i < n; i++)
+    {
+        bool allocated = false;
+
+        for(int j = 0; j < m; j++)
+        {
+            if(allocation[i][j] != 0)
+            {
+                allocated = true;
+                break;
+            }
+        }
+
+        if(allocated)
+            finish[i] = false;
+        else
+            finish[i] = true;
+    }
+
+    // Deadlock Detection Algorithm
+    bool found;
+
+    do
+    {
+        found = false;
+
+        for(int i = 0; i < n; i++)
+        {
+            if(finish[i] == false)
+            {
+                bool possible = true;
+
+                for(int j = 0; j < m; j++)
+                {
+                    if(request[i][j] > work[j])
+                    {
+                        possible = false;
+                        break;
+                    }
+                }
+
+                if(possible)
+                {
+                    for(int j = 0; j < m; j++)
+                    {
+                        work[j] += allocation[i][j];
+                    }
+
+                    finish[i] = true;
+                    found = true;
+                }
+            }
+        }
+
+    } while(found);
+
+    // Display Result
+    bool deadlock = false;
+
+    cout << "\nDeadlock Detection Result:\n";
+
+    for(int i = 0; i < n; i++)
+    {
+        if(finish[i] == false)
+        {
+            cout << "Process P" << i
+                 << " is deadlocked." << endl;
+
+            deadlock = true;
+        }
+    }
+
+    if(deadlock == false)
+    {
+        cout << "No Deadlock Detected." << endl;
+    }
+
+    return 0;
+}
